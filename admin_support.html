@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+    <title>Admin Support Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background: #0b141a;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 8px;
+        }
+        .admin-container {
+            max-width: 1100px;
+            width: 100%;
+            height: 100%;
+            max-height: 820px;
+            background: #111b21;
+            border-radius: 28px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
+        .login-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            padding: 30px 24px;
+            background: #111b21;
+            gap: 18px;
+            width: 100%;
+        }
+        .login-screen .logo {
+            font-size: 3.5rem;
+            color: #25d366;
+            margin-bottom: 5px;
+        }
+        .login-screen h2 {
+            color: #e9edef;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        .login-screen p {
+            color: #aebac1;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        .login-input {
+            width: 100%;
+            max-width: 340px;
+            padding: 14px 18px;
+            border-radius: 30px;
+            border: 1px solid #2a3942;
+            background: #1f2c33;
+            color: #e9edef;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border 0.2s;
+        }
+        .login-input:focus {
+            border-color: #25d366;
+            box-shadow: 0 0 0 3px #25d36630;
+        }
+        .login-input::placeholder {
+            color: #8696a0;
+        }
+        .login-btn {
+            width: 100%;
+            max-width: 340px;
+            padding: 14px;
+            border-radius: 30px;
+            border: none;
+            background: #25d366;
+            color: #111b21;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.15s;
+            touch-action: manipulation;
+        }
+        .login-btn:active {
+            transform: scale(0.97);
+            background: #1fa85a;
+        }
+        .login-btn:disabled {
+            opacity: 0.5;
+            transform: none;
+        }
+        .login-error {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            text-align: center;
+            min-height: 24px;
+        }
+        .sidebar {
+            width: 320px;
+            min-width: 250px;
+            background: #1f2c33;
+            border-right: 1px solid #2a3942;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            height: 100%;
+        }
+        .sidebar-header {
+            padding: 14px 16px;
+            background: #1f2c33;
+            border-bottom: 1px solid #2a3942;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            min-height: 60px;
+        }
+        .sidebar-header h2 {
+            color: #e9edef;
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .sidebar-header h2 i {
+            color: #25d366;
+        }
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .online-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #2a3942;
+            padding: 4px 12px 4px 8px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.2s;
+            touch-action: manipulation;
+        }
+        .online-toggle:active {
+            transform: scale(0.95);
+        }
+        .online-toggle .toggle-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #6b7a84;
+            transition: 0.3s;
+            flex-shrink: 0;
+        }
+        .online-toggle .toggle-dot.active {
+            background: #25d366;
+            box-shadow: 0 0 10px #25d36666;
+        }
+        .online-toggle .toggle-label {
+            color: #aebac1;
+            font-size: 0.65rem;
+            font-weight: 500;
+        }
+        .online-count {
+            font-size: 0.65rem;
+            background: #25d366;
+            color: #111b21;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .admin-logout-btn {
+            background: transparent;
+            border: none;
+            color: #aebac1;
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 4px 8px;
+            transition: color 0.2s;
+            touch-action: manipulation;
+        }
+        .admin-logout-btn:hover {
+            color: #e74c3c;
+        }
+        .admin-logout-btn:active {
+            transform: scale(0.95);
+        }
+        .user-list {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 4px 0;
+            -webkit-overflow-scrolling: touch;
+        }
+        .user-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        .user-list::-webkit-scrollbar-thumb {
+            background: #25d366;
+            border-radius: 10px;
+        }
+        .user-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            cursor: pointer;
+            transition: background 0.15s;
+            border-bottom: 1px solid #2a3942;
+            position: relative;
+            touch-action: manipulation;
+            min-height: 60px;
+        }
+        .user-item:active {
+            background: #2a3942;
+        }
+        .user-item.active {
+            background: #2a3942;
+            border-left: 3px solid #25d366;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            border-radius: 50%;
+            background: #2a3942;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: #aebac1;
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 2px solid #3b4a54;
+            position: relative;
+        }
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .user-avatar .status-indicator {
+            position: absolute;
+            bottom: 0px;
+            right: 0px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid #1f2c33;
+        }
+        .user-avatar .status-indicator.online {
+            background: #25d366;
+        }
+        .user-avatar .status-indicator.offline {
+            background: #6b7a84;
+        }
+        .user-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .user-name {
+            color: #e9edef;
+            font-size: 0.9rem;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .user-last-msg {
+            color: #8696a0;
+            font-size: 0.7rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 2px;
+        }
+        .user-time {
+            color: #8696a0;
+            font-size: 0.6rem;
+            flex-shrink: 0;
+            margin-left: 6px;
+        }
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #0b141a;
+            min-width: 0;
+            height: 100%;
+        }
+        .chat-header {
+            background: #1f2c33;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #2a3942;
+            flex-shrink: 0;
+            min-height: 60px;
+        }
+        .chat-header .user-avatar {
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            cursor: pointer;
+            border-color: #25d366;
+        }
+        .chat-header .user-info {
+            flex: 1;
+        }
+        .chat-header .user-name {
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+        .chat-header .user-name:active {
+            color: #25d366;
+        }
+        .chat-header .user-status {
+            font-size: 0.65rem;
+            color: #aebac1;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .chat-header .online-dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            background: #25d366;
+            border-radius: 50%;
+            animation: pulse-dot 1.8s infinite;
+            flex-shrink: 0;
+        }
+        .chat-header .online-dot.offline {
+            background: #6b7a84;
+            animation: none;
+        }
+        @keyframes pulse-dot {
+            0% { opacity: 0.5; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 0.5; transform: scale(0.9); }
+        }
+        .back-to-list {
+            background: transparent;
+            border: none;
+            color: #aebac1;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 4px 8px;
+            display: none;
+            touch-action: manipulation;
+        }
+        .back-to-list:active {
+            color: #fff;
+            transform: scale(0.95);
+        }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 10px 12px 8px;
+            background: #0b141a;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%230b141a" /><circle cx="20" cy="20" r="2" fill="%231a2c38" opacity="0.25"/><circle cx="70" cy="40" r="3" fill="%231a2c38" opacity="0.15"/><circle cx="40" cy="80" r="2" fill="%231a2c38" opacity="0.2"/></svg>');
+            background-size: 120px 120px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .chat-messages::-webkit-scrollbar {
+            width: 4px;
+        }
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #25d366;
+            border-radius: 10px;
+        }
+        .message-wrapper {
+            display: flex;
+            flex-direction: column;
+            max-width: 85%;
+            animation: fadeSlide 0.2s ease-out;
+        }
+        .message-wrapper.user {
+            align-self: flex-end;
+            align-items: flex-end;
+        }
+        .message-wrapper.admin {
+            align-self: flex-start;
+            align-items: flex-start;
+        }
+        .bubble {
+            padding: 8px 12px;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            word-break: break-word;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            max-width: 100%;
+        }
+        .user .bubble {
+            background: #005c4b;
+            color: #e9edef;
+            border-bottom-right-radius: 4px;
+        }
+        .admin .bubble {
+            background: #1f2c33;
+            color: #e9edef;
+            border-bottom-left-radius: 4px;
+            border: 1px solid #2a3942;
+        }
+        .message-time {
+            font-size: 0.55rem;
+            opacity: 0.6;
+            margin-top: 3px;
+            padding: 0 4px;
+            color: #aebac1;
+        }
+        .user .message-time { text-align: right; }
+        .admin .message-time { text-align: left; }
+        .date-separator {
+            text-align: center;
+            margin: 10px 0 8px;
+            font-size: 0.65rem;
+            font-weight: 500;
+            color: #aebac1;
+            background: #2a3942cc;
+            width: fit-content;
+            padding: 3px 14px;
+            border-radius: 30px;
+            align-self: center;
+            backdrop-filter: blur(4px);
+        }
+        .empty-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #aebac1;
+            gap: 8px;
+            text-align: center;
+            padding: 20px;
+        }
+        .empty-state i {
+            font-size: 2.8rem;
+            opacity: 0.3;
+        }
+        .empty-state span {
+            font-size: 0.9rem;
+        }
+        .chat-input-area {
+            background: #1f2c33;
+            padding: 8px 12px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-top: 1px solid #2a3942;
+            flex-shrink: 0;
+            min-height: 60px;
+        }
+        .chat-input-area input {
+            flex: 1;
+            border: none;
+            border-radius: 30px;
+            padding: 10px 16px;
+            font-size: 0.9rem;
+            background: #2a3942;
+            color: #e9edef;
+            outline: none;
+            border: 1px solid transparent;
+            transition: border 0.15s;
+            min-height: 42px;
+            -webkit-appearance: none;
+        }
+        .chat-input-area input::placeholder {
+            color: #8696a0;
+        }
+        .chat-input-area input:focus {
+            border-color: #25d366;
+            box-shadow: 0 0 0 3px #25d36630;
+        }
+        .chat-input-area input:disabled {
+            opacity: 0.5;
+        }
+        .send-btn {
+            background: #25d366;
+            border: none;
+            color: #111b21;
+            width: 46px;
+            height: 46px;
+            min-width: 46px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(37,211,102,0.25);
+            flex-shrink: 0;
+            touch-action: manipulation;
+        }
+        .send-btn:active {
+            transform: scale(0.92);
+            background: #1fa85a;
+        }
+        .send-btn:disabled {
+            opacity: 0.35;
+            transform: scale(0.96);
+            box-shadow: none;
+            pointer-events: none;
+        }
+        .send-btn i {
+            transform: rotate(45deg);
+            margin-left: 2px;
+        }
+        @keyframes fadeSlide {
+            0% { opacity: 0; transform: translateY(8px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            animation: modalFadeIn 0.25s ease;
+            padding: 16px;
+        }
+        .modal-overlay.open { display: flex; }
+        @keyframes modalFadeIn {
+            0% { opacity: 0; transform: scale(0.95); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .modal-card {
+            background: #1f2c33;
+            max-width: 360px;
+            width: 100%;
+            border-radius: 24px;
+            padding: 24px 20px 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+            border: 1px solid #2a3942;
+            position: relative;
+        }
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            background: transparent;
+            border: none;
+            color: #aebac1;
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: color 0.2s, transform 0.15s;
+            padding: 4px 8px;
+            touch-action: manipulation;
+        }
+        .modal-close:active {
+            color: #fff;
+            transform: rotate(90deg) scale(0.9);
+        }
+        .modal-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #2a3942;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.4rem;
+            color: #aebac1;
+            border: 3px solid #25d366;
+            overflow: hidden;
+        }
+        .modal-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .modal-name {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #e9edef;
+            margin-bottom: 4px;
+        }
+        .modal-divider {
+            height: 1px;
+            background: #2a3942;
+            margin: 12px 0;
+        }
+        .modal-info-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .modal-info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+            border-bottom: 1px solid #2a3942;
+            gap: 10px;
+        }
+        .modal-info-item:last-child { border-bottom: none; }
+        .modal-info-label {
+            color: #8696a0;
+            font-size: 0.7rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            flex-shrink: 0;
+        }
+        .modal-info-value {
+            color: #e9edef;
+            font-size: 0.85rem;
+            text-align: right;
+            word-break: break-word;
+            max-width: 60%;
+        }
+        @media (max-width: 768px) {
+            body { padding: 4px; }
+            .admin-container {
+                flex-direction: column;
+                border-radius: 16px;
+                max-height: 100vh;
+                height: 100%;
+            }
+            .sidebar {
+                width: 100%;
+                min-width: unset;
+                border-right: none;
+                border-bottom: 1px solid #2a3942;
+                height: 100%;
+            }
+            .chat-area {
+                display: none;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: #0b141a;
+                z-index: 10;
+                border-radius: 16px;
+            }
+            .chat-area.active {
+                display: flex;
+            }
+            .back-to-list {
+                display: block !important;
+            }
+            .sidebar-header .back-to-list {
+                display: none !important;
+            }
+            .sidebar-header {
+                padding: 10px 12px;
+                min-height: 52px;
+            }
+            .sidebar-header h2 { font-size: 0.9rem; }
+            .user-item { padding: 8px 12px; min-height: 52px; gap: 8px; }
+            .user-avatar { width: 36px; height: 36px; min-width: 36px; font-size: 1rem; }
+            .user-name { font-size: 0.85rem; }
+            .user-last-msg { font-size: 0.65rem; }
+            .chat-header { padding: 8px 12px; min-height: 52px; }
+            .chat-header .user-avatar { width: 32px; height: 32px; min-width: 32px; }
+            .chat-header .user-name { font-size: 0.9rem; }
+            .chat-messages { padding: 8px 8px 6px; }
+            .message-wrapper { max-width: 90%; }
+            .bubble { font-size: 0.85rem; padding: 7px 11px; border-radius: 14px; }
+            .message-time { font-size: 0.5rem; }
+            .chat-input-area { padding: 6px 10px 10px; min-height: 52px; gap: 6px; }
+            .chat-input-area input { padding: 8px 14px; font-size: 0.85rem; min-height: 38px; }
+            .send-btn { width: 42px; height: 42px; min-width: 42px; font-size: 1.1rem; }
+            .online-toggle .toggle-label { font-size: 0.6rem; }
+            .online-toggle { padding: 3px 8px 3px 6px; }
+            .login-screen { padding: 20px 16px; }
+            .login-screen .logo { font-size: 2.8rem; }
+            .login-screen h2 { font-size: 1.2rem; }
+            .login-input { padding: 12px 16px; font-size: 0.9rem; }
+        }
+        input { font-size: 16px !important; }
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #aebac1;
+            gap: 10px;
+        }
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid #2a3942;
+            border-top: 3px solid #25d366;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            flex-shrink: 0;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .no-users {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            color: #aebac1;
+            gap: 10px;
+        }
+        .no-users i {
+            font-size: 3rem;
+            opacity: 0.3;
+        }
+        .no-users span {
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-container" id="app">
+        <!-- LOGIN SCREEN -->
+        <div class="login-screen" id="loginScreen">
+            <div class="logo"><i class="fas fa-shield-alt"></i></div>
+            <h2>Admin Login</h2>
+            <p>Login with your admin credentials</p>
+            <input type="email" class="login-input" id="loginEmail" placeholder="Admin Email" />
+            <input type="password" class="login-input" id="loginPassword" placeholder="Password" />
+            <div class="login-error" id="loginError"></div>
+            <button class="login-btn" id="loginBtn">Login</button>
+        </div>
+
+        <!-- ADMIN PANEL -->
+        <div id="adminPanel" style="display:none;width:100%;height:100%;">
+            <div class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <h2><i class="fas fa-headset"></i> Live Chats</h2>
+                    <div class="header-controls">
+                        <div class="online-toggle" id="adminToggle">
+                            <span class="toggle-dot active" id="toggleDot"></span>
+                            <span class="toggle-label" id="toggleLabel">Online</span>
+                        </div>
+                        <span class="online-count" id="onlineCount">0</span>
+                        <button class="admin-logout-btn" id="adminLogoutBtn"><i class="fas fa-sign-out-alt"></i></button>
+                        <button class="back-to-list" id="backToListBtn" style="display:none;"><i class="fas fa-arrow-left"></i></button>
+                    </div>
+                </div>
+                <div class="user-list" id="userList"></div>
+            </div>
+
+            <div class="chat-area" id="chatArea">
+                <div class="chat-header" id="chatHeader">
+                    <button class="back-to-list" id="mobileBackBtn" style="display:none;"><i class="fas fa-arrow-left" style="color:#aebac1;font-size:1.2rem;"></i></button>
+                    <div class="user-avatar" id="chatAvatar"><i class="fas fa-user"></i></div>
+                    <div class="user-info">
+                        <div class="user-name" id="chatUserName">Select a user</div>
+                        <div class="user-status">
+                            <span class="online-dot" id="chatStatusDot"></span>
+                            <span id="chatStatusText">Offline</span>
+                        </div>
+                    </div>
+                    <div style="flex:1;"></div>
+                </div>
+
+                <div class="chat-messages" id="chatMessages">
+                    <div id="messageContainer">
+                        <div class="empty-state">
+                            <i class="fas fa-comment-dots"></i>
+                            <span>Select a user to start chatting</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-input-area">
+                    <input type="text" id="messageInput" placeholder="Type admin reply..." autocomplete="off" disabled />
+                    <button class="send-btn" id="sendBtn" disabled>
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- USER PROFILE MODAL -->
+    <div class="modal-overlay" id="profileModal">
+        <div class="modal-card">
+            <button class="modal-close" id="modalCloseBtn"><i class="fas fa-times"></i></button>
+            <div class="modal-avatar" id="modalAvatar"><i class="fas fa-user"></i></div>
+            <div class="modal-name" id="modalName">User</div>
+            <div class="modal-divider"></div>
+            <div class="modal-info-grid">
+                <div class="modal-info-item">
+                    <span class="modal-info-label">FF UID</span>
+                    <span class="modal-info-value" id="modalUid">—</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Gmail</span>
+                    <span class="modal-info-value" id="modalEmail">—</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+    <script>
+        (function() {
+            'use strict';
+
+            const firebaseConfig = {
+                apiKey: "AIzaSyBNqym_-zeFjYv6-b3XddPslXcyc6LlJH8",
+                authDomain: "freefire860.firebaseapp.com",
+                databaseURL: "https://freefire860-default-rtdb.firebaseio.com",
+                projectId: "freefire860",
+                storageBucket: "freefire860.firebasestorage.app",
+                messagingSenderId: "584954441466",
+                appId: "1:584954441466:web:9b69a7693a38fe49ec2343"
+            };
+
+            const app = firebase.initializeApp(firebaseConfig);
+            const auth = firebase.auth();
+            const database = firebase.database();
+
+            // DOM REFS
+            const loginScreen = document.getElementById('loginScreen');
+            const adminPanel = document.getElementById('adminPanel');
+            const loginEmail = document.getElementById('loginEmail');
+            const loginPassword = document.getElementById('loginPassword');
+            const loginBtn = document.getElementById('loginBtn');
+            const loginError = document.getElementById('loginError');
+            const adminLogoutBtn = document.getElementById('adminLogoutBtn');
+
+            const userListEl = document.getElementById('userList');
+            const chatArea = document.getElementById('chatArea');
+            const chatUserName = document.getElementById('chatUserName');
+            const chatAvatar = document.getElementById('chatAvatar');
+            const chatStatusDot = document.getElementById('chatStatusDot');
+            const chatStatusText = document.getElementById('chatStatusText');
+            const messageContainer = document.getElementById('messageContainer');
+            const messageInput = document.getElementById('messageInput');
+            const sendBtn = document.getElementById('sendBtn');
+            const onlineCount = document.getElementById('onlineCount');
+            const mobileBackBtn = document.getElementById('mobileBackBtn');
+            const backToListBtn = document.getElementById('backToListBtn');
+            const adminToggle = document.getElementById('adminToggle');
+            const toggleDot = document.getElementById('toggleDot');
+            const toggleLabel = document.getElementById('toggleLabel');
+
+            const profileModal = document.getElementById('profileModal');
+            const modalCloseBtn = document.getElementById('modalCloseBtn');
+            const modalAvatar = document.getElementById('modalAvatar');
+            const modalName = document.getElementById('modalName');
+            const modalUid = document.getElementById('modalUid');
+            const modalEmail = document.getElementById('modalEmail');
+
+            // STATE
+            let currentUserId = null;
+            let currentUserProfile = null;
+            let messagesRef = null;
+            let allUsers = {};
+            let isMobile = window.innerWidth <= 768;
+            let isAdminOnline = true;
+            let isSending = false;
+            let isAdminLoggedIn = false;
+
+            // HELPERS
+            function formatTime(timestamp) {
+                const d = new Date(timestamp);
+                return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+            }
+
+            function formatDate(timestamp) {
+                const d = new Date(timestamp);
+                const today = new Date();
+                const yesterday = new Date(today);
+                yesterday.setDate(yesterday.getDate() - 1);
+                if (d.toDateString() === today.toDateString()) return 'Today';
+                if (d.toDateString() === yesterday.toDateString()) return 'Yesterday';
+                return d.toLocaleDateString([], { day: 'numeric', month: 'short', year: 'numeric' });
+            }
+
+            function escapeHtml(text) {
+                if (!text) return '—';
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            function getAvatarHtml(profile) {
+                if (profile && profile.photoURL) {
+                    return `<img src="${profile.photoURL}" alt="Avatar" />`;
+                }
+                return `<i class="fas fa-user"></i>`;
+            }
+
+            function scrollToBottom() {
+                const chatMessages = document.getElementById('chatMessages');
+                if (chatMessages) {
+                    setTimeout(() => {
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }, 30);
+                }
+            }
+
+            function getStatusDot(online) {
+                return online ? 'online-dot' : 'online-dot offline';
+            }
+
+            function getStatusText(online) {
+                return online ? 'Online' : 'Offline';
+            }
+
+            // RENDER USER LIST
+            function renderUserList(users) {
+                allUsers = users;
+                const userIds = Object.keys(users);
+                let html = '';
+
+                if (userIds.length === 0) {
+                    html = `
+                        <div class="no-users">
+                            <i class="fas fa-users"></i>
+                            <span>No users registered yet</span>
+                        </div>
+                    `;
+                    userListEl.innerHTML = html;
+                    onlineCount.textContent = '0';
+                    return;
+                }
+
+                let onlineCountNum = 0;
+
+                const sorted = userIds.sort((a, b) => {
+                    const msgA = users[a].lastMessageTime || 0;
+                    const msgB = users[b].lastMessageTime || 0;
+                    return msgB - msgA;
+                });
+
+                sorted.forEach(uid => {
+                    const user = users[uid];
+                    const profile = user.profile || {};
+                    const isOnline = profile.online || false;
+                    if (isOnline) onlineCountNum++;
+
+                    const lastMsg = user.lastMessage || 'No messages';
+                    const lastTime = user.lastMessageTime ? formatTime(user.lastMessageTime) : '';
+                    const displayName = profile.displayName || 'User';
+                    const isActive = uid === currentUserId;
+
+                    html += `
+                        <div class="user-item ${isActive ? 'active' : ''}" data-uid="${uid}">
+                            <div class="user-avatar">
+                                ${getAvatarHtml(profile)}
+                                <span class="status-indicator ${isOnline ? 'online' : 'offline'}"></span>
+                            </div>
+                            <div class="user-info">
+                                <div class="user-name">${escapeHtml(displayName)}</div>
+                                <div class="user-last-msg">${escapeHtml(lastMsg)}</div>
+                            </div>
+                            <div class="user-time">${lastTime}</div>
+                        </div>
+                    `;
+                });
+
+                userListEl.innerHTML = html;
+                onlineCount.textContent = onlineCountNum;
+
+                document.querySelectorAll('.user-item').forEach(el => {
+                    el.addEventListener('click', function(e) {
+                        const uid = this.dataset.uid;
+                        if (uid) selectUser(uid);
+                    });
+                });
+            }
+
+            // SELECT USER - ✅ UPDATED PATH
+            function selectUser(uid) {
+                if (currentUserId === uid) return;
+
+                if (messagesRef) {
+                    messagesRef.off();
+                    messagesRef = null;
+                }
+
+                currentUserId = uid;
+                currentUserProfile = allUsers[uid]?.profile || {};
+
+                chatUserName.textContent = currentUserProfile.displayName || 'User';
+                chatAvatar.innerHTML = getAvatarHtml(currentUserProfile);
+                const isOnline = currentUserProfile.online || false;
+                chatStatusDot.className = getStatusDot(isOnline);
+                chatStatusText.textContent = getStatusText(isOnline);
+
+                messageInput.disabled = !isAdminOnline || !isAdminLoggedIn;
+                sendBtn.disabled = !isAdminOnline || !isAdminLoggedIn;
+
+                if (isMobile) {
+                    chatArea.classList.add('active');
+                }
+
+                loadMessages(uid);
+
+                document.querySelectorAll('.user-item').forEach(el => {
+                    el.classList.toggle('active', el.dataset.uid === uid);
+                });
+            }
+
+            // LOAD MESSAGES - ✅ UPDATED PATH (users node ke andar)
+            function loadMessages(uid) {
+                messageContainer.innerHTML = `
+                    <div class="loading-spinner">
+                        <div class="spinner"></div> Loading messages...
+                    </div>
+                `;
+
+                // ✅ NEW PATH - users/{uid}/supportChat/messages
+                messagesRef = database.ref('users/' + uid + '/supportChat/messages');
+
+                messagesRef.on('value', (snapshot) => {
+                    if (!snapshot.exists()) {
+                        messageContainer.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-comment-dots"></i>
+                                <span>No messages yet</span>
+                                <span style="font-size:0.8rem;opacity:0.6;">Send a reply to start</span>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    const messages = [];
+                    snapshot.forEach(child => {
+                        messages.push({ id: child.key, ...child.val() });
+                    });
+                    messages.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+
+                    let html = '';
+                    let currentDate = '';
+
+                    messages.forEach(msg => {
+                        const msgDate = formatDate(msg.timestamp || Date.now());
+                        const time = formatTime(msg.timestamp || Date.now());
+                        const sender = msg.sender || 'user';
+                        const text = msg.text || '';
+
+                        if (msgDate !== currentDate) {
+                            currentDate = msgDate;
+                            html += `<div class="date-separator">${currentDate}</div>`;
+                        }
+
+                        const wrapperClass = sender === 'user' ? 'user' : 'admin';
+                        html += `
+                            <div class="message-wrapper ${wrapperClass}">
+                                <div class="bubble">${escapeHtml(text)}</div>
+                                <div class="message-time">${time}</div>
+                            </div>
+                        `;
+                    });
+
+                    messageContainer.innerHTML = html;
+                    scrollToBottom();
+
+                    if (messages.length > 0) {
+                        const last = messages[messages.length - 1];
+                        if (allUsers[uid]) {
+                            allUsers[uid].lastMessage = last.text || 'Media';
+                            allUsers[uid].lastMessageTime = last.timestamp || Date.now();
+                            renderUserList(allUsers);
+                        }
+                    }
+
+                }, (error) => {
+                    console.error('Messages error:', error);
+                    messageContainer.innerHTML = `
+                        <div class="empty-state" style="color:#e74c3c;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Error loading messages</span>
+                        </div>
+                    `;
+                });
+            }
+
+            // SEND ADMIN REPLY - ✅ UPDATED PATH
+            function sendMessage() {
+                if (!isAdminLoggedIn) {
+                    alert('Please login as admin first.');
+                    return;
+                }
+                if (!currentUserId) {
+                    alert('Please select a user first.');
+                    return;
+                }
+                if (!isAdminOnline) {
+                    alert('You are offline. Turn on online mode to send messages.');
+                    return;
+                }
+                if (isSending) return;
+
+                const text = messageInput.value.trim();
+                if (!text) return;
+
+                isSending = true;
+                sendBtn.disabled = true;
+
+                const newMsg = {
+                    sender: 'admin',
+                    text: text,
+                    timestamp: Date.now()
+                };
+
+                // ✅ NEW PATH - users/{uid}/supportChat/messages
+                const msgRef = database.ref('users/' + currentUserId + '/supportChat/messages');
+
+                msgRef.push(newMsg)
+                    .then(() => {
+                        messageInput.value = '';
+                        isSending = false;
+                        sendBtn.disabled = false;
+                        if (allUsers[currentUserId]) {
+                            allUsers[currentUserId].lastMessage = text;
+                            allUsers[currentUserId].lastMessageTime = Date.now();
+                            renderUserList(allUsers);
+                        }
+                        console.log('Message sent successfully to:', currentUserId);
+                    })
+                    .catch((err) => {
+                        console.error('Send error:', err);
+                        isSending = false;
+                        sendBtn.disabled = false;
+                        alert('Failed to send message. Error: ' + err.message);
+                    });
+            }
+
+            // LISTEN ALL USERS
+            function listenUsers() {
+                const usersRef = database.ref('users');
+
+                usersRef.on('value', (snapshot) => {
+                    const users = {};
+                    let hasUsers = false;
+
+                    snapshot.forEach(child => {
+                        const uid = child.key;
+                        const data = child.val();
+                        if (data && data.email) {
+                            users[uid] = {
+                                profile: data,
+                                lastMessage: data.lastMessage || '',
+                                lastMessageTime: data.lastMessageTime || 0
+                            };
+                            hasUsers = true;
+                        }
+                    });
+
+                    if (hasUsers) {
+                        Object.keys(users).forEach(uid => {
+                            // ✅ NEW PATH - users/{uid}/supportChat/messages
+                            const chatRef = database.ref('users/' + uid + '/supportChat/messages');
+                            chatRef.limitToLast(1).once('value').then((msgSnap) => {
+                                if (msgSnap.exists()) {
+                                    msgSnap.forEach(m => {
+                                        const msg = m.val();
+                                        if (users[uid]) {
+                                            users[uid].lastMessage = msg.text || 'Media';
+                                            users[uid].lastMessageTime = msg.timestamp || 0;
+                                        }
+                                    });
+                                }
+                                renderUserList(users);
+                            });
+                        });
+                    }
+
+                    if (!hasUsers) {
+                        userListEl.innerHTML = `
+                            <div class="no-users">
+                                <i class="fas fa-users"></i>
+                                <span>No users registered yet</span>
+                            </div>
+                        `;
+                        onlineCount.textContent = '0';
+                        return;
+                    }
+
+                    renderUserList(users);
+
+                    if (!currentUserId && Object.keys(users).length > 0) {
+                        const firstUid = Object.keys(users)[0];
+                        if (firstUid) selectUser(firstUid);
+                    } else if (currentUserId && users[currentUserId]) {
+                        currentUserProfile = users[currentUserId].profile || {};
+                        chatUserName.textContent = currentUserProfile.displayName || 'User';
+                        chatAvatar.innerHTML = getAvatarHtml(currentUserProfile);
+                        const isOnline = currentUserProfile.online || false;
+                        chatStatusDot.className = getStatusDot(isOnline);
+                        chatStatusText.textContent = getStatusText(isOnline);
+                    }
+                }, (error) => {
+                    console.error('Users list error:', error);
+                });
+            }
+
+            // OPEN USER PROFILE
+            function openUserProfile(profile) {
+                const data = profile || currentUserProfile || {};
+                modalAvatar.innerHTML = getAvatarHtml(data);
+                modalName.textContent = data.displayName || data.email || 'User';
+                modalUid.textContent = data.freeFireUid || '—';
+                modalEmail.textContent = data.email || '—';
+                profileModal.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeProfileModal() {
+                profileModal.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+
+            // TOGGLE ADMIN ONLINE/OFFLINE
+            function toggleAdminStatus() {
+                if (!isAdminLoggedIn) return;
+                isAdminOnline = !isAdminOnline;
+                if (isAdminOnline) {
+                    toggleDot.className = 'toggle-dot active';
+                    toggleLabel.textContent = 'Online';
+                    database.ref('admin/status').set({ online: true, lastSeen: Date.now() });
+                } else {
+                    toggleDot.className = 'toggle-dot';
+                    toggleLabel.textContent = 'Offline';
+                    database.ref('admin/status').set({ online: false, lastSeen: Date.now() });
+                }
+                const val = messageInput.value.trim();
+                messageInput.disabled = !isAdminOnline || !isAdminLoggedIn;
+                sendBtn.disabled = !isAdminOnline || !isAdminLoggedIn || val === '' || !currentUserId || isSending;
+            }
+
+            // ADMIN LOGIN
+            function adminLogin() {
+                const email = loginEmail.value.trim();
+                const password = loginPassword.value.trim();
+
+                if (!email || !password) {
+                    loginError.textContent = 'Please enter email and password';
+                    return;
+                }
+
+                loginBtn.disabled = true;
+                loginError.textContent = 'Logging in...';
+
+                auth.signInWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        const user = userCredential.user;
+                        return Promise.all([
+                            database.ref('adminConfig/adminUID').once('value'),
+                            database.ref('users/' + user.uid + '/isAdmin').once('value')
+                        ]);
+                    })
+                    .then(([adminConfigSnap, isAdminSnap]) => {
+                        const adminUID = adminConfigSnap.val();
+                        const isAdmin = isAdminSnap.val();
+
+                        if (adminUID === auth.currentUser.uid || isAdmin === true) {
+                            isAdminLoggedIn = true;
+                            loginScreen.style.display = 'none';
+                            adminPanel.style.display = 'flex';
+
+                            database.ref('admin/status').set({ online: true, lastSeen: Date.now() });
+                            listenUsers();
+
+                            messageInput.disabled = false;
+                            sendBtn.disabled = false;
+
+                            loginBtn.disabled = false;
+                            loginError.textContent = '';
+
+                            console.log('✅ Admin logged in:', auth.currentUser.email);
+
+                            setTimeout(() => {
+                                if (Object.keys(allUsers).length > 0) {
+                                    const firstUid = Object.keys(allUsers)[0];
+                                    if (firstUid) selectUser(firstUid);
+                                }
+                            }, 1000);
+                        } else {
+                            auth.signOut();
+                            loginError.textContent = '❌ Access denied. You are not an admin.';
+                            loginBtn.disabled = false;
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Login error:', error);
+                        let errorMsg = 'Error connecting to server.';
+                        if (error.code === 'auth/user-not-found') {
+                            errorMsg = 'Admin account not found.';
+                        } else if (error.code === 'auth/wrong-password') {
+                            errorMsg = 'Invalid password.';
+                        } else if (error.code === 'auth/invalid-email') {
+                            errorMsg = 'Invalid email address.';
+                        }
+                        loginError.textContent = errorMsg;
+                        loginBtn.disabled = false;
+                    });
+            }
+
+            // ADMIN LOGOUT
+            function adminLogout() {
+                if (messagesRef) {
+                    messagesRef.off();
+                    messagesRef = null;
+                }
+
+                database.ref('admin/status').set({ online: false, lastSeen: Date.now() });
+
+                auth.signOut().catch(() => {});
+
+                isAdminLoggedIn = false;
+                isAdminOnline = false;
+                currentUserId = null;
+                currentUserProfile = null;
+
+                loginScreen.style.display = 'flex';
+                adminPanel.style.display = 'none';
+
+                loginEmail.value = '';
+                loginPassword.value = '';
+                loginError.textContent = '';
+                loginBtn.disabled = false;
+
+                messageInput.value = '';
+                messageInput.disabled = true;
+                sendBtn.disabled = true;
+
+                console.log('Admin logged out');
+            }
+
+            // AUTH STATE CHECK
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    Promise.all([
+                        database.ref('adminConfig/adminUID').once('value'),
+                        database.ref('users/' + user.uid + '/isAdmin').once('value')
+                    ]).then(([adminConfigSnap, isAdminSnap]) => {
+                        const adminUID = adminConfigSnap.val();
+                        const isAdmin = isAdminSnap.val();
+
+                        if ((adminUID === user.uid || isAdmin === true) && !isAdminLoggedIn) {
+                            isAdminLoggedIn = true;
+                            loginScreen.style.display = 'none';
+                            adminPanel.style.display = 'flex';
+                            database.ref('admin/status').set({ online: true, lastSeen: Date.now() });
+                            listenUsers();
+                            messageInput.disabled = false;
+                            sendBtn.disabled = false;
+                            console.log('✅ Admin auto-logged in:', user.email);
+                        } else if (!(adminUID === user.uid || isAdmin === true) && isAdminLoggedIn) {
+                            adminLogout();
+                        }
+                    });
+                } else {
+                    if (isAdminLoggedIn) {
+                        adminLogout();
+                    }
+                }
+            });
+
+            // EVENT LISTENERS
+            loginBtn.addEventListener('click', adminLogin);
+
+            loginEmail.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') loginPassword.focus();
+            });
+
+            loginPassword.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') adminLogin();
+            });
+
+            adminLogoutBtn.addEventListener('click', adminLogout);
+
+            sendBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                sendMessage();
+            });
+
+            messageInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    if (!sendBtn.disabled) sendMessage();
+                }
+            });
+
+            messageInput.addEventListener('input', () => {
+                const val = messageInput.value.trim();
+                sendBtn.disabled = (val === '' || !isAdminOnline || !currentUserId || isSending || !isAdminLoggedIn);
+            });
+
+            const headerAvatar = document.querySelector('.chat-header .user-avatar');
+            const headerName = document.querySelector('.chat-header .user-name');
+
+            if (headerAvatar) {
+                headerAvatar.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (currentUserId && currentUserProfile) {
+                        openUserProfile(currentUserProfile);
+                    }
+                });
+            }
+
+            if (headerName) {
+                headerName.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (currentUserId && currentUserProfile) {
+                        openUserProfile(currentUserProfile);
+                    }
+                });
+            }
+
+            modalCloseBtn.addEventListener('click', closeProfileModal);
+            profileModal.addEventListener('click', (e) => {
+                if (e.target === profileModal) closeProfileModal();
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && profileModal.classList.contains('open')) closeProfileModal();
+            });
+
+            function handleMobileBack(e) {
+                e.preventDefault();
+                chatArea.classList.remove('active');
+            }
+
+            mobileBackBtn.addEventListener('click', handleMobileBack);
+            backToListBtn.addEventListener('click', handleMobileBack);
+
+            adminToggle.addEventListener('click', toggleAdminStatus);
+
+            window.addEventListener('resize', () => {
+                isMobile = window.innerWidth <= 768;
+                if (!isMobile) {
+                    chatArea.classList.remove('active');
+                }
+            });
+
+            window.addEventListener('beforeunload', function() {
+                if (messagesRef) {
+                    messagesRef.off();
+                }
+                if (isAdminLoggedIn) {
+                    database.ref('admin/status').set({ online: false, lastSeen: Date.now() });
+                }
+            });
+
+            console.log('✅ Admin Support Panel initialized with users/supportChat path');
+
+        })();
+    </script>
+
+</body>
+</html>
