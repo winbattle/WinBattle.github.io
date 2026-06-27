@@ -208,9 +208,7 @@
 
                 <div class="text-center">
 
-                    <img src="https://i.ibb.co/1GpqQmNK/IMG-20260625-172345.jpg"
-                         alt="UPI QR"
-                         style="width:220px;border-radius:12px;margin-bottom:15px;">
+                    <img id="depositQrImage" src="" alt="UPI QR" style="width:220px;border-radius:12px;margin-bottom:15px;">
 
                     <p class="small text-secondary">
                         Scan QR code and complete payment
@@ -379,6 +377,7 @@
              addAmountModalInstance: getElement('addAmountModalEl') ? new bootstrap.Modal(getElement('addAmountModalEl')) : null, modalUserEmail: getElement('modalUserEmailEl'),
              withdrawModalInstance: getElement('withdrawModalEl') ? new bootstrap.Modal(getElement('withdrawModalEl')) : null, withdrawModalBalance: getElement('withdrawModalBalanceEl'), withdrawAmountInput: getElement('withdrawAmountInputEl'), withdrawMethodInput: getElement('withdrawMethodInputEl'), minWithdrawAmount: getElement('minWithdrawAmountEl'), withdrawStatusMessage: getElement('withdrawStatusMessageEl'), submitWithdrawRequestBtn: getElement('submitWithdrawRequestBtnEl'),
              submitDepositBtn: getElement('submitDepositBtnEl'), depositAmount: getElement('depositAmount'), transactionId: getElement('transactionId'),
+             depositQrImage: getElement('depositQrImage'),
              matchDetailsModalInstance: getElement('matchDetailsModalEl') ? new bootstrap.Modal(getElement('matchDetailsModalEl')) : null, matchDetailsModalTitle: getElement('matchDetailsModalTitleEl'), matchDetailsModalBody: getElement('matchDetailsModalBodyEl'),
              idPasswordModalInstance: getElement('idPasswordModalEl') ? new bootstrap.Modal(getElement('idPasswordModalEl')) : null, roomIdDisplay: getElement('roomIdDisplayEl'), roomPasswordDisplay: getElement('roomPasswordDisplayEl'),
              securityWarning: getElement('securityWarning')
@@ -723,6 +722,11 @@ function loadAppSettings() {
              // Apply other settings to UI
              if (appSettings.logoUrl && elements.appLogo) elements.appLogo.src = appSettings.logoUrl;
              if (appSettings.minWithdraw && elements.minWithdrawAmount) elements.minWithdrawAmount.textContent = appSettings.minWithdraw;
+
+             // Update QR Code in real-time
+             if (appSettings.qrUrl && elements.depositQrImage) {
+                elements.depositQrImage.src = appSettings.qrUrl;
+             }
 
              // Update modal content dynamically based on settings
              const upiIdEl = document.querySelector('.phonepe-number');
@@ -1476,6 +1480,12 @@ async function handleJoinTournamentClick(event) {
      elements.addAmountWalletBtn?.addEventListener('click', () => { if (currentUser && elements.addAmountModalInstance) { if(elements.modalUserEmail) elements.modalUserEmail.textContent = currentUser.email || 'N/A'; elements.addAmountModalInstance.show(); } else if (!currentUser) { alert("Login first."); showSection('login-section'); } });
      elements.submitWithdrawRequestBtn?.addEventListener('click', submitWithdrawRequestHandler);
 
+     // Load QR Code from appSettings
+if (elements.depositQrImage) {
+    const qrUrl = appSettings.qrUrl || 'YOUR_DEFAULT_QR_IMAGE_LINK';
+    elements.depositQrImage.src = qrUrl;
+}
+        
      // ===== DEPOSIT SUBMIT HANDLER =====
 elements.submitDepositBtn?.addEventListener('click', async function() {
     if (!currentUser) {
